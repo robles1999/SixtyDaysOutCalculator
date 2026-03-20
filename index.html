@@ -1,0 +1,272 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>+60 Days Date Calculator</title>
+  <style>
+    :root{
+      --bg1:#0f172a;   /* slate-900 */
+      --bg2:#1e293b;   /* slate-800 */
+      --accent:#6366f1;/* indigo-500 */
+      --accent-2:#22d3ee; /* cyan-400 */
+      --card: rgba(255,255,255,0.08);
+      --card-border: rgba(255,255,255,0.15);
+      --text:#e5e7eb; /* zinc-200 */
+      --muted:#cbd5e1;/* slate-300 */
+      --shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1000px 600px at 20% 10%, rgba(99,102,241,0.25), transparent 60%),
+                  radial-gradient(800px 500px at 80% 90%, rgba(34,211,238,0.22), transparent 60%),
+                  linear-gradient(180deg, var(--bg1), var(--bg2));
+      display: grid;
+      place-items: center;
+    }
+    .card{
+      width: min(680px, 94vw);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset: -40%;
+      background: conic-gradient(from 0deg at 50% 50%, rgba(99,102,241,0.15), rgba(34,211,238,0.12), rgba(99,102,241,0.15));
+      filter: blur(40px);
+      z-index: 0;
+      animation: spin 18s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .inner { position: relative; z-index: 1; }
+    h1{
+      font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+      margin: 0 0 6px 0;
+      letter-spacing: 0.2px;
+    }
+    p.sub{
+      color: var(--muted);
+      margin: 0 0 18px 0;
+      font-size: 0.95rem;
+    }
+    .row{
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: end;
+      margin: 10px 0 18px;
+    }
+    label{
+      display:block; margin-bottom: 6px; color: var(--muted); font-size: 0.92rem;
+    }
+    input[type="date"]{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+    }
+    input[type="date"]:focus{
+      border-color: rgba(99,102,241,0.65);
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
+      background: rgba(0,0,0,0.2);
+    }
+    .btn{
+      appearance: none; -webkit-appearance: none;
+      border: none; cursor: pointer;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+      transition: transform .06s ease, filter .2s ease, box-shadow .2s ease;
+      white-space: nowrap;
+    }
+    .btn.secondary{
+      background: linear-gradient(135deg, rgba(34,211,238,0.9), rgba(59,130,246,0.9));
+      box-shadow: 0 8px 24px rgba(34,211,238,0.28);
+      color: #0b1220;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .result{
+      margin-top: 12px;
+      padding: 14px 14px;
+      border-radius: 12px;
+      border: 1px dashed rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.2);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+    .date-line{
+      font-size: clamp(1.02rem, 2.2vw, 1.15rem);
+      line-height: 1.35;
+    }
+    .note{
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 8px;
+    }
+    .stack{
+      display: grid; gap: 8px;
+    }
+    @media (max-width: 480px){
+      .row{ grid-template-columns: 1fr; }
+      .result{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="region" aria-label="60-day date calculator">
+    <div class="inner">
+      <h1>60‑Day Date Calculator</h1>
+      <p class="sub">Pick a start date to see the date that’s exactly <strong>60 calendar days</strong> later.</p>
+
+      <form id="calcForm" autocomplete="off" novalidate>
+        <div class="row">
+          <div class="stack">
+            <label for="start">Start date</label>
+            <input id="start" name="start" type="date" required aria-required="true" />
+          </div>
+          <div class="stack" style="align-self: end;">
+            <button type="button" id="btnToday" class="btn secondary" title="Use today’s date">Use Today</button>
+            <button type="submit" class="btn" title="Calculate 60 days out">Calculate +60 days</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="result" class="result" aria-live="polite" aria-atomic="true" hidden>
+        <div class="date-line">
+          <div id="resultLong"></div>
+          <div id="resultShort" class="note"></div>
+        </div>
+        <div>
+          <button id="copyBtn" class="btn secondary" title="Copy date to clipboard">Copy</button>
+        </div>
+      </div>
+
+      <p class="note">Example: 03/20/2026 ➜ 05/19/2026 (60 days later).</p>
+    </div>
+  </main>
+
+  <script>
+    // --- Utilities (UTC-based to avoid DST/timezone drift) ---
+    function parseDateInput(value){
+      // value comes as "YYYY-MM-DD" from <input type="date">
+      const [y, m, d] = value.split("-").map(Number);
+      // Build a Date in UTC at midnight
+      return new Date(Date.UTC(y, m - 1, d));
+    }
+    function addDaysUTC(dateUTC, days){
+      const d = new Date(Date.UTC(
+        dateUTC.getUTCFullYear(),
+        dateUTC.getUTCMonth(),
+        dateUTC.getUTCDate()
+      ));
+      d.setUTCDate(d.getUTCDate() + days);
+      return d;
+    }
+    function pad(n){ return String(n).padStart(2, "0"); }
+    function formatMMDDYYYY(dateUTC){
+      const mm = pad(dateUTC.getUTCMonth() + 1);
+      const dd = pad(dateUTC.getUTCDate());
+      const yyyy = dateUTC.getUTCFullYear();
+      return `${mm}/${dd}/${yyyy}`;
+    }
+    function formatLong(dateUTC){
+      const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      const d = dateUTC.getUTCDay();
+      const m = dateUTC.getUTCMonth();
+      const day = dateUTC.getUTCDate();
+      const y = dateUTC.getUTCFullYear();
+      return `${days[d]}, ${months[m]} ${day}, ${y}`;
+    }
+    function setDateInputToToday(el){
+      // ISO yyyy-mm-dd in local time
+      const todayISO = new Date().toISOString().slice(0,10);
+      el.value = todayISO;
+    }
+
+    // --- App Logic ---
+    const startEl = document.getElementById("start");
+    const form = document.getElementById("calcForm");
+    const btnToday = document.getElementById("btnToday");
+
+    const resultBox = document.getElementById("result");
+    const resultLong = document.getElementById("resultLong");
+    const resultShort = document.getElementById("resultShort");
+    const copyBtn = document.getElementById("copyBtn");
+
+    // Initialize default to today
+    setDateInputToToday(startEl);
+
+    function calculateAndRender(){
+      if(!startEl.value) { resultBox.hidden = true; return; }
+      const startUTC = parseDateInput(startEl.value);
+      const plus60 = addDaysUTC(startUTC, 60);
+
+      resultLong.textContent = formatLong(plus60);
+      resultShort.textContent = `MM/DD/YYYY: ${formatMMDDYYYY(plus60)}`;
+      resultBox.hidden = false;
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      calculateAndRender();
+    });
+
+    // Auto-update when date changes
+    startEl.addEventListener("change", calculateAndRender);
+
+    // Today shortcut
+    btnToday.addEventListener("click", () => {
+      setDateInputToToday(startEl);
+      calculateAndRender();
+      startEl.focus();
+    });
+
+    // Copy to clipboard
+    copyBtn.addEventListener("click", async () => {
+      const text = `${resultLong.textContent} (${resultShort.textContent.replace("MM/DD/YYYY: ", "")})`;
+      try{
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => { copyBtn.textContent = "Copy"; }, 1200);
+      }catch{
+        // Fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => { copyBtn.textContent = "Copy"; }, 1200);
+      }
+    });
+
+    // Render initial result on load (today + 60)
+    calculateAndRender();
+  </script>
+</body>
+</html>
