@@ -1,32 +1,45 @@
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>+60 Days Date Calculator</title>
   <style>
     :root{
+      /* Default: DARK THEME */
       --bg1:#0f172a;   /* slate-900 */
       --bg2:#1e293b;   /* slate-800 */
       --accent:#6366f1;/* indigo-500 */
       --accent-2:#22d3ee; /* cyan-400 */
       --card: rgba(255,255,255,0.08);
       --card-border: rgba(255,255,255,0.15);
-      --text:#e5e7eb; /* zinc-200 */
-      --muted:#cbd5e1;/* slate-300 */
+      --text:#0f172a;  /* slate-900 */
+      --muted:#334155; /* slate-700 */
       --shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
       --radius: 16px;
     }
+
+    /* LIGHT THEME (higher specificity than :root) */
+    :root[data-theme="light"]{
+      --bg1:#f1f5f9;   /* slate-100 */
+      --bg2:#e2e8f0;   /* slate-200 */
+      --text:#0f172a;  /* slate-900 */
+      --muted:#334155; /* slate-700 */
+      --card-border: rgba(15,23,42,0.15);
+      /* accents stay the same */
+    }
+
     * { box-sizing: border-box; }
     html, body {
       height: 100%;
       margin: 0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
       color: var(--text);
-      background: radial-gradient(1000px 600px at 20% 10%, rgba(99,102,241,0.25), transparent 60%),
+     /* background: radial-gradient(1000px 600px at 20% 10%, rgba(99,102,241,0.25), transparent 60%),
                   radial-gradient(800px 500px at 80% 90%, rgba(34,211,238,0.22), transparent 60%),
                   linear-gradient(180deg, var(--bg1), var(--bg2));
+	*/
       display: grid;
       place-items: center;
     }
@@ -52,6 +65,47 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .inner { position: relative; z-index: 1; }
+
+    /* === THEME PILL === */
+    .theme-switch{
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(6px);
+      z-index: 5;                  /* <- ensure it’s on top */
+      pointer-events: auto;        /* <- ensure it accepts clicks */
+    }
+    html[data-theme="light"] .theme-switch{
+      background: rgba(255,255,255,0.65);
+    }
+    .pill{
+      appearance: none; -webkit-appearance: none;
+      border: none; cursor: pointer;          /* <- pointer hand */
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      color: var(--text);
+      background: transparent;
+      transition: filter .2s, box-shadow .2s, background .2s, color .2s;
+    }
+    .pill:hover{ filter: brightness(1.05); }
+    .pill:focus-visible{
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .pill.active{
+      color: white;
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      box-shadow: 0 6px 18px rgba(99,102,241,0.35);
+    }
+
     h1{
       font-size: clamp(1.25rem, 2.6vw, 1.6rem);
       margin: 0 0 6px 0;
@@ -88,6 +142,18 @@
       box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
       background: rgba(0,0,0,0.2);
     }
+    /* Light theme input tweaks */
+    html[data-theme="light"] input[type="date"]{
+      background: rgba(255,255,255,0.85);
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.04);
+      border-color: rgba(15,23,42,0.15);
+    }
+    html[data-theme="light"] input[type="date"]:focus{
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
+    }
+
     .btn{
       appearance: none; -webkit-appearance: none;
       border: none; cursor: pointer;
@@ -106,6 +172,7 @@
       color: #0b1220;
     }
     .btn:active{ transform: translateY(1px); }
+
     .result{
       margin-top: 12px;
       padding: 14px 14px;
@@ -117,6 +184,11 @@
       gap: 10px;
       align-items: center;
     }
+    html[data-theme="light"] .result{
+      border-color: rgba(15,23,42,0.18);
+      background: rgba(0,0,0,0.06);
+    }
+
     .date-line{
       font-size: clamp(1.02rem, 2.2vw, 1.15rem);
       line-height: 1.35;
@@ -126,9 +198,8 @@
       font-size: 0.92rem;
       margin-top: 8px;
     }
-    .stack{
-      display: grid; gap: 8px;
-    }
+    .stack{ display: grid; gap: 8px; }
+
     @media (max-width: 480px){
       .row{ grid-template-columns: 1fr; }
       .result{ grid-template-columns: 1fr; }
@@ -137,6 +208,12 @@
 </head>
 <body>
   <main class="card" role="region" aria-label="60-day date calculator">
+    <!-- Theme pill -->
+    <div class="theme-switch" role="group" aria-label="Theme selection">
+      <button id="btnDark" class="pill" aria-pressed="false" type="button">Dark</button>
+      <button id="btnLight" class="pill" aria-pressed="false" type="button">Light</button>
+    </div>
+
     <div class="inner">
       <h1>60‑Day Date Calculator</h1>
       <p class="sub">Pick a start date to see the date that’s exactly <strong>60 calendar days</strong> later.</p>
@@ -154,9 +231,9 @@
         </div>
       </form>
 
-	<div class="stack">
-            <label for="start">60 days out</label>
-          </div>
+      <div class="stack">
+        <label for="start">60 days out</label>
+      </div>
 
       <div id="result" class="result" aria-live="polite" aria-atomic="true" hidden>
         <div class="date-line">
@@ -164,7 +241,7 @@
           <div id="resultShort" class="note"></div>
         </div>
         <div>
-          <button id="copyBtn" class="btn secondary" title="Copy date to clipboard">Copy</button>
+          <button id="copyBtn" class="btn secondary" title="Copy date to clipboard" type="button">Copy</button>
         </div>
       </div>
 
@@ -173,6 +250,45 @@
   </main>
 
   <script>
+    /* ===== Theme handling (pill) ===== */
+    (function(){
+      var darkBtn = document.getElementById('btnDark');
+      var lightBtn = document.getElementById('btnLight');
+
+      function setActive(which){
+        if(which === 'light'){
+          lightBtn.classList.add('active');   lightBtn.setAttribute('aria-pressed','true');
+          darkBtn.classList.remove('active'); darkBtn.setAttribute('aria-pressed','false');
+        } else {
+          darkBtn.classList.add('active');     darkBtn.setAttribute('aria-pressed','true');
+          lightBtn.classList.remove('active'); lightBtn.setAttribute('aria-pressed','false');
+        }
+      }
+
+      function applyTheme(theme){
+        var html = document.documentElement;
+        if(theme === 'light'){
+          html.setAttribute('data-theme','light');
+          setActive('light');
+        } else {
+          html.removeAttribute('data-theme');
+          setActive('dark');
+        }
+        try { localStorage.setItem('theme', theme); } catch(e) {}
+      }
+
+      // Init (default dark)
+      var saved = 'dark';
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') saved = t;
+      } catch(e) {}
+      applyTheme(saved);
+
+      darkBtn.addEventListener('click', function(e){ e.preventDefault(); applyTheme('dark'); });
+      lightBtn.addEventListener('click', function(e){ e.preventDefault(); applyTheme('light'); });
+    })();
+
     // --- Utilities (UTC-based to avoid DST/timezone drift) ---
     function parseDateInput(value){
       // value comes as "YYYY-MM-DD" from <input type="date">
