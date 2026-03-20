@@ -1,52 +1,64 @@
 <!doctype html>
-<html lang="en" data-theme="">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>+60 Days Date Calculator</title>
   <style>
-    :root{
-      /* Default: DARK THEME */
-      --bg1:#0f172a;   /* slate-900 */
-      --bg2:#1e293b;   /* slate-800 */
-      --accent:#6366f1;/* indigo-500 */
-      --accent-2:#22d3ee; /* cyan-400 */
-      --card: rgba(255,255,255,0.08);
-      --card-border: rgba(255,255,255,0.15);
-      --text:#e5e7eb; /* zinc-200 */
-      --muted:#cbd5e1;/* slate-300 */
-      --shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
-      --radius: 16px;
-    }
-
-    /* LIGHT THEME (higher specificity than :root) */
-    :root[data-theme="light"]{
-      --bg1:#f1f5f9;   /* slate-100 */
-      --bg2:#e2e8f0;   /* slate-200 */
-      --text:#0f172a;  /* slate-900 */
-      --muted:#334155; /* slate-700 */
-      --card-border: rgba(15,23,42,0.15);
-      /* accents stay the same */
-    }
-
     * { box-sizing: border-box; }
+
+    /* -------------------------------------------------------------
+       PAGE BACKGROUND + LAYOUT — THEME-SPECIFIC
+       We apply theme classes on <body>: theme-dark | theme-light
+       ------------------------------------------------------------- */
+
+    /* DARK THEME (original colors) */
+    body.theme-dark {
+      /* Original layered background */
+      background:
+        radial-gradient(1000px 600px at 20% 10%, rgba(99,102,241,0.25), transparent 60%),
+        radial-gradient(800px 500px at 80% 90%, rgba(34,211,238,0.22), transparent 60%),
+        linear-gradient(180deg, #0f172a, #1e293b);
+      /* Fix the "3 columns" artifact */
+      background-repeat: no-repeat, no-repeat, no-repeat;
+      background-size: 160% 160%, 160% 160%, 100% 100%;
+      background-position: center, center, center;
+      background-attachment: fixed, fixed, fixed;
+
+      color: #e5e7eb; /* readable over dark card */
+    }
+
+    /* LIGHT THEME (lighter page background to match the light card) */
+    body.theme-light {
+      background:
+        radial-gradient(1100px 650px at 22% 12%, rgba(99,102,241,0.12), transparent 68%),
+        radial-gradient(1000px 600px at 78% 88%, rgba(34,211,238,0.10), transparent 70%),
+        linear-gradient(180deg, #f8fafc, #e2e8f0); /* slate-50 → slate-200 */
+      background-repeat: no-repeat, no-repeat, no-repeat;
+      background-size: 160% 160%, 160% 160%, 100% 100%;
+      background-position: center, center, center;
+      background-attachment: fixed, fixed, fixed;
+
+      color: #0f172a; /* readable over light card */
+    }
+
+    /* Shared page layout */
     html, body {
       height: 100%;
       margin: 0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--text);
-      background: radial-gradient(1000px 600px at 20% 10%, rgba(99,102,241,0.25), transparent 60%),
-                  radial-gradient(800px 500px at 80% 90%, rgba(34,211,238,0.22), transparent 60%),
-                  linear-gradient(180deg, var(--bg1), var(--bg2));
       display: grid;
       place-items: center;
     }
+
+    /* -------------------------------------------------------------
+       CARD — THEME-AGNOSTIC LAYOUT
+       (theming applied via body.theme-xxx .card rules below)
+       ------------------------------------------------------------- */
     .card{
       width: min(680px, 94vw);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
       backdrop-filter: blur(8px);
       padding: 22px;
       position: relative;
@@ -62,58 +74,14 @@
       pointer-events: none;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
     .inner { position: relative; z-index: 1; }
-
-    /* === THEME PILL === */
-    .theme-switch{
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px;
-      border-radius: 999px;
-      border: 1px solid var(--card-border);
-      background: rgba(0,0,0,0.25);
-      backdrop-filter: blur(6px);
-      z-index: 5;                  /* <- ensure it’s on top */
-      pointer-events: auto;        /* <- ensure it accepts clicks */
-    }
-    html[data-theme="light"] .theme-switch{
-      background: rgba(255,255,255,0.65);
-    }
-    .pill{
-      appearance: none; -webkit-appearance: none;
-      border: none; cursor: pointer;          /* <- pointer hand */
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: 600;
-      color: var(--text);
-      background: transparent;
-      transition: filter .2s, box-shadow .2s, background .2s, color .2s;
-    }
-    .pill:hover{ filter: brightness(1.05); }
-    .pill:focus-visible{
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
-    .pill.active{
-      color: white;
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
-      box-shadow: 0 6px 18px rgba(99,102,241,0.35);
-    }
-
     h1{
       font-size: clamp(1.25rem, 2.6vw, 1.6rem);
       margin: 0 0 6px 0;
       letter-spacing: 0.2px;
     }
-    p.sub{
-      color: var(--muted);
-      margin: 0 0 18px 0;
-      font-size: 0.95rem;
-    }
+    p.sub{ margin: 0 0 18px 0; font-size: 0.95rem; }
     .row{
       display: grid;
       grid-template-columns: 1fr auto;
@@ -121,37 +89,14 @@
       align-items: end;
       margin: 10px 0 18px;
     }
-    label{
-      display:block; margin-bottom: 6px; color: var(--muted); font-size: 0.92rem;
-    }
+    label{ display:block; margin-bottom: 6px; font-size: 0.92rem; }
     input[type="date"]{
       width: 100%;
       padding: 12px 12px;
       border-radius: 12px;
-      border: 1px solid var(--card-border);
-      background: rgba(0,0,0,0.25);
-      color: var(--text);
       outline: none;
       transition: border-color .2s, background .2s, box-shadow .2s;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
     }
-    input[type="date"]:focus{
-      border-color: rgba(99,102,241,0.65);
-      box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
-      background: rgba(0,0,0,0.2);
-    }
-    /* Light theme input tweaks */
-    html[data-theme="light"] input[type="date"]{
-      background: rgba(255,255,255,0.85);
-      color: var(--text);
-      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.04);
-      border-color: rgba(15,23,42,0.15);
-    }
-    html[data-theme="light"] input[type="date"]:focus{
-      background: rgba(255,255,255,0.95);
-      box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
-    }
-
     .btn{
       appearance: none; -webkit-appearance: none;
       border: none; cursor: pointer;
@@ -159,7 +104,7 @@
       border-radius: 12px;
       font-weight: 600;
       color: white;
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      background: linear-gradient(135deg, #6366f1, #7c3aed);
       box-shadow: 0 8px 24px rgba(99,102,241,0.35);
       transition: transform .06s ease, filter .2s ease, box-shadow .2s ease;
       white-space: nowrap;
@@ -170,43 +115,130 @@
       color: #0b1220;
     }
     .btn:active{ transform: translateY(1px); }
-
     .result{
       margin-top: 12px;
       padding: 14px 14px;
       border-radius: 12px;
-      border: 1px dashed rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.2);
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 10px;
       align-items: center;
     }
-    html[data-theme="light"] .result{
-      border-color: rgba(15,23,42,0.18);
-      background: rgba(0,0,0,0.06);
-    }
-
-    .date-line{
-      font-size: clamp(1.02rem, 2.2vw, 1.15rem);
-      line-height: 1.35;
-    }
-    .note{
-      color: var(--muted);
-      font-size: 0.92rem;
-      margin-top: 8px;
-    }
+    .date-line{ font-size: clamp(1.02rem, 2.2vw, 1.15rem); line-height: 1.35; }
     .stack{ display: grid; gap: 8px; }
-
     @media (max-width: 480px){
       .row{ grid-template-columns: 1fr; }
       .result{ grid-template-columns: 1fr; }
     }
+
+    /* -------------------------------------------------------------
+       THEME PILL — inside the card; themed by the current body class
+       ------------------------------------------------------------- */
+    .theme-switch{
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 999px;
+      z-index: 3; /* above ::before (0) and .inner (1) */
+      pointer-events: auto;
+      border: 1px solid transparent;
+    }
+    .pill{
+      appearance: none; -webkit-appearance: none;
+      border: none; cursor: pointer;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 600;
+      background: transparent;
+      transition: filter .2s, box-shadow .2s, background .2s, color .2s;
+    }
+    .pill:hover{ filter: brightness(1.05); }
+    .pill:focus-visible{
+      outline: 2px solid #6366f1;
+      outline-offset: 2px;
+    }
+    .pill.active{
+      color: white !important;
+      background: linear-gradient(135deg, #6366f1, #7c3aed);
+      box-shadow: 0 6px 18px rgba(99,102,241,0.35);
+    }
+
+    /* -------------------------------------------------------------
+       COMPLETE THEME: DARK
+       ------------------------------------------------------------- */
+    body.theme-dark .card{
+      color: #e5e7eb;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    body.theme-dark .theme-switch{
+      background: rgba(0,0,0,0.25);
+      border-color: rgba(255,255,255,0.15);
+    }
+    body.theme-dark .pill{ color: #e5e7eb; }
+    body.theme-dark .sub,
+    body.theme-dark label,
+    body.theme-dark .note{ color: #cbd5e1; }
+
+    body.theme-dark input[type="date"]{
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.25);
+      color: #e5e7eb;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
+    }
+    body.theme-dark input[type="date"]:focus{
+      border-color: rgba(99,102,241,0.65);
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
+      background: rgba(0,0,0,0.2);
+    }
+
+    body.theme-dark .result{
+      border: 1px dashed rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.2);
+    }
+
+    /* -------------------------------------------------------------
+       COMPLETE THEME: LIGHT
+       ------------------------------------------------------------- */
+    body.theme-light .card{
+      color: #0f172a;
+      background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.82));
+      border: 1px solid rgba(15,23,42,0.15);
+    }
+    body.theme-light .theme-switch{
+      background: rgba(255,255,255,0.86);
+      border-color: rgba(15,23,42,0.15);
+    }
+    body.theme-light .pill{ color: #0f172a; }
+    body.theme-light .sub,
+    body.theme-light label,
+    body.theme-light .note{ color: #334155; }
+
+    body.theme-light input[type="date"]{
+      border: 1px solid rgba(15,23,42,0.15);
+      background: rgba(255,255,255,0.94);
+      color: #0f172a;
+      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.04);
+    }
+    body.theme-light input[type="date"]:focus{
+      border-color: rgba(99,102,241,0.65);
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
+      background: rgba(255,255,255,0.98);
+    }
+
+    body.theme-light .result{
+      border: 1px dashed rgba(15,23,42,0.18);
+      background: rgba(255,255,255,0.75);
+    }
   </style>
 </head>
-<body>
-  <main class="card" role="region" aria-label="60-day date calculator">
-    <!-- Theme pill -->
+<body class="theme-dark">
+  <main id="card" class="card" role="region" aria-label="60-day date calculator">
+    <!-- Theme pill INSIDE the card -->
     <div class="theme-switch" role="group" aria-label="Theme selection">
       <button id="btnDark" class="pill" aria-pressed="false" type="button">Dark</button>
       <button id="btnLight" class="pill" aria-pressed="false" type="button">Light</button>
@@ -248,7 +280,7 @@
   </main>
 
   <script>
-    /* ===== Theme handling (pill) ===== */
+    // ===== Theme toggle (swap complete classes on <body>) =====
     (function(){
       var darkBtn = document.getElementById('btnDark');
       var lightBtn = document.getElementById('btnLight');
@@ -264,30 +296,30 @@
       }
 
       function applyTheme(theme){
-        var html = document.documentElement;
+        document.body.classList.remove('theme-dark','theme-light');
         if(theme === 'light'){
-          html.setAttribute('data-theme','light');
+          document.body.classList.add('theme-light');
           setActive('light');
         } else {
-          html.removeAttribute('data-theme');
+          document.body.classList.add('theme-dark');
           setActive('dark');
         }
-        try { localStorage.setItem('theme', theme); } catch(e) {}
+        try { localStorage.setItem('uiTheme', theme); } catch(e) {}
       }
 
-      // Init (default dark)
+      // Init (restore saved; default dark)
       var saved = 'dark';
       try {
-        var t = localStorage.getItem('theme');
+        var t = localStorage.getItem('uiTheme');
         if (t === 'light' || t === 'dark') saved = t;
       } catch(e) {}
       applyTheme(saved);
 
-      darkBtn.addEventListener('click', function(e){ e.preventDefault(); applyTheme('dark'); });
-      lightBtn.addEventListener('click', function(e){ e.preventDefault(); applyTheme('light'); });
+      darkBtn.addEventListener('click', function(){ applyTheme('dark'); });
+      lightBtn.addEventListener('click', function(){ applyTheme('light'); });
     })();
 
-    // --- Utilities (UTC-based to avoid DST/timezone drift) ---
+    // ===== Calculator logic (unchanged) =====
     function parseDateInput(value){
       // value comes as "YYYY-MM-DD" from <input type="date">
       const [y, m, d] = value.split("-").map(Number);
