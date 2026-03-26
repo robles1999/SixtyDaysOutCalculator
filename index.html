@@ -1,423 +1,595 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>+60 Days Date Calculator</title>
-  <link rel="icon" href="https://dummyimage.com/64x64/000/fff&text=60" type="image/png">
-  <style>
-    * { box-sizing: border-box; }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>+60 Days Date Calculator</title>
+    <link
+      rel="icon"
+      href="https://dummyimage.com/64x64/000/fff&text=60"
+      type="image/png"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
 
-    /* -------------------------------------------------------------
-       PAGE BACKGROUND + LAYOUT — THEME-SPECIFIC
-       We apply theme classes on <body>: theme-dark | theme-light
-       ------------------------------------------------------------- */
+      body.theme-dark {
+        background:
+          radial-gradient(
+            1000px 600px at 20% 10%,
+            rgba(99, 102, 241, 0.25),
+            transparent 60%
+          ),
+          radial-gradient(
+            800px 500px at 80% 90%,
+            rgba(34, 211, 238, 0.22),
+            transparent 60%
+          ),
+          linear-gradient(180deg, #0f172a, #1e293b);
+        background-repeat: no-repeat, no-repeat, no-repeat;
+        background-size:
+          160% 160%,
+          160% 160%,
+          100% 100%;
+        background-position: center, center, center;
+        background-attachment: fixed, fixed, fixed;
+        color: #e5e7eb;
+      }
 
-    /* DARK THEME (original colors) */
-    body.theme-dark {
-      /* Original layered background */
-      background:
-        radial-gradient(1000px 600px at 20% 10%, rgba(99,102,241,0.25), transparent 60%),
-        radial-gradient(800px 500px at 80% 90%, rgba(34,211,238,0.22), transparent 60%),
-        linear-gradient(180deg, #0f172a, #1e293b);
-      /* Fix the "3 columns" artifact */
-      background-repeat: no-repeat, no-repeat, no-repeat;
-      background-size: 160% 160%, 160% 160%, 100% 100%;
-      background-position: center, center, center;
-      background-attachment: fixed, fixed, fixed;
+      body.theme-light {
+        background:
+          radial-gradient(
+            1100px 650px at 22% 12%,
+            rgba(99, 102, 241, 0.12),
+            transparent 68%
+          ),
+          radial-gradient(
+            1000px 600px at 78% 88%,
+            rgba(34, 211, 238, 0.1),
+            transparent 70%
+          ),
+          linear-gradient(180deg, #f8fafc, #e2e8f0);
+        background-repeat: no-repeat, no-repeat, no-repeat;
+        background-size:
+          160% 160%,
+          160% 160%,
+          100% 100%;
+        background-position: center, center, center;
+        background-attachment: fixed, fixed, fixed;
+        color: #0f172a;
+      }
 
-      color: #e5e7eb; /* readable over dark card */
-    }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          "Helvetica Neue",
+          Arial,
+          "Noto Sans",
+          "Apple Color Emoji",
+          "Segoe UI Emoji";
+        display: grid;
+        place-items: center;
+      }
 
-    /* LIGHT THEME (lighter page background to match the light card) */
-    body.theme-light {
-      background:
-        radial-gradient(1100px 650px at 22% 12%, rgba(99,102,241,0.12), transparent 68%),
-        radial-gradient(1000px 600px at 78% 88%, rgba(34,211,238,0.10), transparent 70%),
-        linear-gradient(180deg, #f8fafc, #e2e8f0); /* slate-50 → slate-200 */
-      background-repeat: no-repeat, no-repeat, no-repeat;
-      background-size: 160% 160%, 160% 160%, 100% 100%;
-      background-position: center, center, center;
-      background-attachment: fixed, fixed, fixed;
+      .card {
+        width: min(680px, 94vw);
+        border-radius: 16px;
+        box-shadow:
+          0 10px 30px rgba(0, 0, 0, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(8px);
+        padding: 22px;
+        position: relative;
+        overflow: hidden;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: conic-gradient(
+          from 0deg at 50% 50%,
+          rgba(99, 102, 241, 0.15),
+          rgba(34, 211, 238, 0.12),
+          rgba(99, 102, 241, 0.15)
+        );
+        filter: blur(40px);
+        z-index: 0;
+        animation: spin 18s linear infinite;
+        pointer-events: none;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-      color: #0f172a; /* readable over light card */
-    }
+      .inner {
+        position: relative;
+        z-index: 1;
+      }
+      h1 {
+        font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+        margin: 0 0 6px 0;
+        letter-spacing: 0.2px;
+      }
+      p.sub {
+        margin: 0 0 18px 0;
+        font-size: 0.95rem;
+      }
 
-    /* Shared page layout */
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
-      display: grid;
-      place-items: center;
-    }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        align-items: end;
+        margin: 10px 0 18px;
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.92rem;
+      }
 
-    /* -------------------------------------------------------------
-       CARD — THEME-AGNOSTIC LAYOUT
-       (theming applied via body.theme-xxx .card rules below)
-       ------------------------------------------------------------- */
-    .card{
-      width: min(680px, 94vw);
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04);
-      backdrop-filter: blur(8px);
-      padding: 22px;
-      position: relative;
-      overflow: hidden;
-    }
-    .card::before{
-      content:"";
-      position:absolute; inset: -40%;
-      background: conic-gradient(from 0deg at 50% 50%, rgba(99,102,241,0.15), rgba(34,211,238,0.12), rgba(99,102,241,0.15));
-      filter: blur(40px);
-      z-index: 0;
-      animation: spin 18s linear infinite;
-      pointer-events: none;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+      input[type="text"].date-input {
+        width: 100%;
+        padding: 12px 12px;
+        border-radius: 12px;
+        outline: none;
+        font-size: 1rem;
+        letter-spacing: 0.05em;
+        transition:
+          border-color 0.2s,
+          background 0.2s,
+          box-shadow 0.2s;
+      }
 
-    .inner { position: relative; z-index: 1; }
-    h1{
-      font-size: clamp(1.25rem, 2.6vw, 1.6rem);
-      margin: 0 0 6px 0;
-      letter-spacing: 0.2px;
-    }
-    p.sub{ margin: 0 0 18px 0; font-size: 0.95rem; }
-    .row{
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: end;
-      margin: 10px 0 18px;
-    }
-    label{ display:block; margin-bottom: 6px; font-size: 0.92rem; }
-    input[type="date"]{
-      width: 100%;
-      padding: 12px 12px;
-      border-radius: 12px;
-      outline: none;
-      transition: border-color .2s, background .2s, box-shadow .2s;
-    }
-    .btn{
-      appearance: none; -webkit-appearance: none;
-      border: none; cursor: pointer;
-      padding: 12px 16px;
-      border-radius: 12px;
-      font-weight: 600;
-      color: white;
-      background: linear-gradient(135deg, #6366f1, #7c3aed);
-      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
-      transition: transform .06s ease, filter .2s ease, box-shadow .2s ease;
-      white-space: nowrap;
-    }
-    .btn.secondary{
-      background: linear-gradient(135deg, rgba(34,211,238,0.9), rgba(59,130,246,0.9));
-      box-shadow: 0 8px 24px rgba(34,211,238,0.28);
-      color: #0b1220;
-    }
-    .btn:active{ transform: translateY(1px); }
-    .result{
-      margin-top: 12px;
-      padding: 14px 14px;
-      border-radius: 12px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      align-items: center;
-    }
-    .date-line{ font-size: clamp(1.02rem, 2.2vw, 1.15rem); line-height: 1.35; }
-    .stack{ display: grid; gap: 8px; }
-    @media (max-width: 480px){
-      .row{ grid-template-columns: 1fr; }
-      .result{ grid-template-columns: 1fr; }
-    }
+      .btn {
+        appearance: none;
+        -webkit-appearance: none;
+        border: none;
+        cursor: pointer;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-weight: 600;
+        color: white;
+        background: linear-gradient(135deg, #6366f1, #7c3aed);
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+        transition:
+          transform 0.06s ease,
+          filter 0.2s ease,
+          box-shadow 0.2s ease;
+        white-space: nowrap;
+      }
+      .btn.secondary {
+        background: linear-gradient(
+          135deg,
+          rgba(34, 211, 238, 0.9),
+          rgba(59, 130, 246, 0.9)
+        );
+        box-shadow: 0 8px 24px rgba(34, 211, 238, 0.28);
+        color: #0b1220;
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
 
-    /* -------------------------------------------------------------
-       THEME PILL — inside the card; themed by the current body class
-       ------------------------------------------------------------- */
-    .theme-switch{
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px;
-      border-radius: 999px;
-      z-index: 3; /* above ::before (0) and .inner (1) */
-      pointer-events: auto;
-      border: 1px solid transparent;
-    }
-    .pill{
-      appearance: none; -webkit-appearance: none;
-      border: none; cursor: pointer;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: 600;
-      background: transparent;
-      transition: filter .2s, box-shadow .2s, background .2s, color .2s;
-    }
-    .pill:hover{ filter: brightness(1.05); }
-    .pill:focus-visible{
-      outline: 2px solid #6366f1;
-      outline-offset: 2px;
-    }
-    .pill.active{
-      color: white !important;
-      background: linear-gradient(135deg, #6366f1, #7c3aed);
-      box-shadow: 0 6px 18px rgba(99,102,241,0.35);
-    }
+      .result {
+        margin-top: 12px;
+        padding: 14px 14px;
+        border-radius: 12px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+      }
+      .date-line {
+        font-size: clamp(1.02rem, 2.2vw, 1.15rem);
+        line-height: 1.35;
+      }
+      .stack {
+        display: grid;
+        gap: 8px;
+      }
 
-    /* -------------------------------------------------------------
-       COMPLETE THEME: DARK
-       ------------------------------------------------------------- */
-    body.theme-dark .card{
-      color: #e5e7eb;
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
-      border: 1px solid rgba(255,255,255,0.15);
-    }
-    body.theme-dark .theme-switch{
-      background: rgba(0,0,0,0.25);
-      border-color: rgba(255,255,255,0.15);
-    }
-    body.theme-dark .pill{ color: #e5e7eb; }
-    body.theme-dark .sub,
-    body.theme-dark label,
-    body.theme-dark .note{ color: #cbd5e1; }
+      @media (max-width: 480px) {
+        .row {
+          grid-template-columns: 1fr;
+        }
+        .result {
+          grid-template-columns: 1fr;
+        }
+      }
 
-    body.theme-dark input[type="date"]{
-      border: 1px solid rgba(255,255,255,0.15);
-      background: rgba(0,0,0,0.25);
-      color: #e5e7eb;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.02);
-    }
-    body.theme-dark input[type="date"]:focus{
-      border-color: rgba(99,102,241,0.65);
-      box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
-      background: rgba(0,0,0,0.2);
-    }
+      /* Theme switch */
+      .theme-switch {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;
+        border-radius: 999px;
+        z-index: 3;
+        pointer-events: auto;
+        border: 1px solid transparent;
+      }
+      .pill {
+        appearance: none;
+        -webkit-appearance: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-weight: 600;
+        background: transparent;
+        transition:
+          filter 0.2s,
+          box-shadow 0.2s,
+          background 0.2s,
+          color 0.2s;
+      }
+      .pill:hover {
+        filter: brightness(1.05);
+      }
+      .pill:focus-visible {
+        outline: 2px solid #6366f1;
+        outline-offset: 2px;
+      }
+      .pill.active {
+        color: white !important;
+        background: linear-gradient(135deg, #6366f1, #7c3aed);
+        box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
+      }
 
-    body.theme-dark .result{
-      border: 1px dashed rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.2);
-    }
+      /* DARK */
+      body.theme-dark .card {
+        color: #e5e7eb;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06),
+          rgba(255, 255, 255, 0.03)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      body.theme-dark .theme-switch {
+        background: rgba(0, 0, 0, 0.25);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+      body.theme-dark .pill {
+        color: #e5e7eb;
+      }
+      body.theme-dark .sub,
+      body.theme-dark label,
+      body.theme-dark .note {
+        color: #cbd5e1;
+      }
+      body.theme-dark input.date-input {
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(0, 0, 0, 0.25);
+        color: #e5e7eb;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+      }
+      body.theme-dark input.date-input::placeholder {
+        color: rgba(203, 213, 225, 0.45);
+      }
+      body.theme-dark input.date-input:focus {
+        border-color: rgba(99, 102, 241, 0.65);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+        background: rgba(0, 0, 0, 0.2);
+      }
+      body.theme-dark input.date-input.invalid {
+        border-color: rgba(239, 68, 68, 0.7);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+      }
+      body.theme-dark .result {
+        border: 1px dashed rgba(255, 255, 255, 0.18);
+        background: rgba(0, 0, 0, 0.2);
+      }
 
-    /* -------------------------------------------------------------
-       COMPLETE THEME: LIGHT
-       ------------------------------------------------------------- */
-    body.theme-light .card{
-      color: #0f172a;
-      background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.82));
-      border: 1px solid rgba(15,23,42,0.15);
-    }
-    body.theme-light .theme-switch{
-      background: rgba(255,255,255,0.86);
-      border-color: rgba(15,23,42,0.15);
-    }
-    body.theme-light .pill{ color: #0f172a; }
-    body.theme-light .sub,
-    body.theme-light label,
-    body.theme-light .note{ color: #334155; }
+      /* LIGHT */
+      body.theme-light .card {
+        color: #0f172a;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.94),
+          rgba(255, 255, 255, 0.82)
+        );
+        border: 1px solid rgba(15, 23, 42, 0.15);
+      }
+      body.theme-light .theme-switch {
+        background: rgba(255, 255, 255, 0.86);
+        border-color: rgba(15, 23, 42, 0.15);
+      }
+      body.theme-light .pill {
+        color: #0f172a;
+      }
+      body.theme-light .sub,
+      body.theme-light label,
+      body.theme-light .note {
+        color: #334155;
+      }
+      body.theme-light input.date-input {
+        border: 1px solid rgba(15, 23, 42, 0.15);
+        background: rgba(255, 255, 255, 0.94);
+        color: #0f172a;
+        box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
+      }
+      body.theme-light input.date-input::placeholder {
+        color: rgba(51, 65, 85, 0.45);
+      }
+      body.theme-light input.date-input:focus {
+        border-color: rgba(99, 102, 241, 0.65);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18);
+        background: rgba(255, 255, 255, 0.98);
+      }
+      body.theme-light input.date-input.invalid {
+        border-color: rgba(239, 68, 68, 0.7);
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+      }
+      body.theme-light .result {
+        border: 1px dashed rgba(15, 23, 42, 0.18);
+        background: rgba(255, 255, 255, 0.75);
+      }
+    </style>
+  </head>
+  <body class="theme-dark">
+    <main
+      id="card"
+      class="card"
+      role="region"
+      aria-label="60-day date calculator"
+    >
+      <div class="theme-switch" role="group" aria-label="Theme selection">
+        <button id="btnDark" class="pill" aria-pressed="false" type="button">
+          Dark
+        </button>
+        <button id="btnLight" class="pill" aria-pressed="false" type="button">
+          Light
+        </button>
+      </div>
 
-    body.theme-light input[type="date"]{
-      border: 1px solid rgba(15,23,42,0.15);
-      background: rgba(255,255,255,0.94);
-      color: #0f172a;
-      box-shadow: inset 0 0 0 1px rgba(15,23,42,0.04);
-    }
-    body.theme-light input[type="date"]:focus{
-      border-color: rgba(99,102,241,0.65);
-      box-shadow: 0 0 0 4px rgba(99,102,241,0.18);
-      background: rgba(255,255,255,0.98);
-    }
+      <div class="inner">
+        <h1>60‑Day Date Calculator</h1>
+        <p class="sub">
+          Pick a start date to see the date that's exactly
+          <strong>60 calendar days</strong> later.
+        </p>
 
-    body.theme-light .result{
-      border: 1px dashed rgba(15,23,42,0.18);
-      background: rgba(255,255,255,0.75);
-    }
-  </style>
-</head>
-<body class="theme-dark">
-  <main id="card" class="card" role="region" aria-label="60-day date calculator">
-    <!-- Theme pill INSIDE the card -->
-    <div class="theme-switch" role="group" aria-label="Theme selection">
-      <button id="btnDark" class="pill" aria-pressed="false" type="button">Dark</button>
-      <button id="btnLight" class="pill" aria-pressed="false" type="button">Light</button>
-    </div>
-
-    <div class="inner">
-      <h1>60‑Day Date Calculator</h1>
-      <p class="sub">Pick a start date to see the date that’s exactly <strong>60 calendar days</strong> later.</p>
-
-      <form id="calcForm" autocomplete="off" novalidate>
         <div class="row">
           <div class="stack">
-            <label for="start">Start date</label>
-            <input id="start" name="start" type="date" required aria-required="true" />
+            <label for="dateInput">Start date</label>
+            <input
+              id="dateInput"
+              type="text"
+              class="date-input"
+              placeholder="MM/DD/YYYY"
+              maxlength="10"
+              inputmode="numeric"
+              autocomplete="off"
+            />
           </div>
-          <div class="stack" style="align-self: end;">
-            <button type="button" id="btnToday" class="btn secondary" title="Use today’s date">Use Today</button>
-            <button type="submit" class="btn" title="Calculate 60 days out">Calculate +60 days</button>
+          <div class="stack" style="align-self: end">
+            <button
+              type="button"
+              id="btnToday"
+              class="btn secondary"
+              title="Use today's date"
+            >
+              Use Today
+            </button>
           </div>
         </div>
-      </form>
 
-      <div class="stack">
-        <label for="start">60 days out</label>
-      </div>
-
-      <div id="result" class="result" aria-live="polite" aria-atomic="true" hidden>
-        <div class="date-line">
-          <div id="resultLong"></div>
-          <div id="resultShort" class="note"></div>
+        <div class="stack">
+          <label>60 days out</label>
         </div>
-        <div>
-          <button id="copyBtn" class="btn secondary" title="Copy date to clipboard" type="button">Copy</button>
+
+        <div
+          id="result"
+          class="result"
+          aria-live="polite"
+          aria-atomic="true"
+          hidden
+        >
+          <div class="date-line">
+            <div id="resultLong"></div>
+            <div id="resultShort" class="note"></div>
+          </div>
+          <div>
+            <button
+              id="copyBtn"
+              class="btn secondary"
+              title="Copy date to clipboard"
+              type="button"
+            >
+              Copy
+            </button>
+          </div>
         </div>
       </div>
+    </main>
 
-      <p class="note">Example: 03/20/2026 ➜ 05/19/2026 (60 days later).</p>
-    </div>
-  </main>
-
-  <script>
-    // ===== Theme toggle (swap complete classes on <body>) =====
-    (function(){
-      var darkBtn = document.getElementById('btnDark');
-      var lightBtn = document.getElementById('btnLight');
-
-      function setActive(which){
-        if(which === 'light'){
-          lightBtn.classList.add('active');   lightBtn.setAttribute('aria-pressed','true');
-          darkBtn.classList.remove('active'); darkBtn.setAttribute('aria-pressed','false');
-        } else {
-          darkBtn.classList.add('active');     darkBtn.setAttribute('aria-pressed','true');
-          lightBtn.classList.remove('active'); lightBtn.setAttribute('aria-pressed','false');
+    <script>
+      // ===== Theme toggle =====
+      (function () {
+        var darkBtn = document.getElementById("btnDark");
+        var lightBtn = document.getElementById("btnLight");
+        function setActive(which) {
+          if (which === "light") {
+            lightBtn.classList.add("active");
+            lightBtn.setAttribute("aria-pressed", "true");
+            darkBtn.classList.remove("active");
+            darkBtn.setAttribute("aria-pressed", "false");
+          } else {
+            darkBtn.classList.add("active");
+            darkBtn.setAttribute("aria-pressed", "true");
+            lightBtn.classList.remove("active");
+            lightBtn.setAttribute("aria-pressed", "false");
+          }
         }
-      }
-
-      function applyTheme(theme){
-        document.body.classList.remove('theme-dark','theme-light');
-        if(theme === 'light'){
-          document.body.classList.add('theme-light');
-          setActive('light');
-        } else {
-          document.body.classList.add('theme-dark');
-          setActive('dark');
+        function applyTheme(theme) {
+          document.body.classList.remove("theme-dark", "theme-light");
+          document.body.classList.add(
+            theme === "light" ? "theme-light" : "theme-dark",
+          );
+          setActive(theme === "light" ? "light" : "dark");
+          try {
+            localStorage.setItem("uiTheme", theme);
+          } catch (e) {}
         }
-        try { localStorage.setItem('uiTheme', theme); } catch(e) {}
+        var saved = "dark";
+        try {
+          var t = localStorage.getItem("uiTheme");
+          if (t === "light" || t === "dark") saved = t;
+        } catch (e) {}
+        applyTheme(saved);
+        darkBtn.addEventListener("click", function () {
+          applyTheme("dark");
+        });
+        lightBtn.addEventListener("click", function () {
+          applyTheme("light");
+        });
+      })();
+
+      // ===== Text input with auto-formatting =====
+      const MONTHS = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      const dateInput = document.getElementById("dateInput");
+      const resultBox = document.getElementById("result");
+      const resultLong = document.getElementById("resultLong");
+      const resultShort = document.getElementById("resultShort");
+      const copyBtn = document.getElementById("copyBtn");
+
+      function pad(n) {
+        return String(n).padStart(2, "0");
       }
 
-      // Init (restore saved; default dark)
-      var saved = 'dark';
-      try {
-        var t = localStorage.getItem('uiTheme');
-        if (t === 'light' || t === 'dark') saved = t;
-      } catch(e) {}
-      applyTheme(saved);
-
-      darkBtn.addEventListener('click', function(){ applyTheme('dark'); });
-      lightBtn.addEventListener('click', function(){ applyTheme('light'); });
-    })();
-
-    // ===== Calculator logic (unchanged) =====
-    function parseDateInput(value){
-      // value comes as "YYYY-MM-DD" from <input type="date">
-      const [y, m, d] = value.split("-").map(Number);
-      // Build a Date in UTC at midnight
-      return new Date(Date.UTC(y, m - 1, d));
-    }
-    function addDaysUTC(dateUTC, days){
-      const d = new Date(Date.UTC(
-        dateUTC.getUTCFullYear(),
-        dateUTC.getUTCMonth(),
-        dateUTC.getUTCDate()
-      ));
-      d.setUTCDate(d.getUTCDate() + days);
-      return d;
-    }
-    function pad(n){ return String(n).padStart(2, "0"); }
-    function formatMMDDYYYY(dateUTC){
-      const mm = pad(dateUTC.getUTCMonth() + 1);
-      const dd = pad(dateUTC.getUTCDate());
-      const yyyy = dateUTC.getUTCFullYear();
-      return `${mm}/${dd}/${yyyy}`;
-    }
-    function formatLong(dateUTC){
-      const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-      const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-      const d = dateUTC.getUTCDay();
-      const m = dateUTC.getUTCMonth();
-      const day = dateUTC.getUTCDate();
-      const y = dateUTC.getUTCFullYear();
-      return `${days[d]}, ${months[m]} ${day}, ${y}`;
-    }
-    function setDateInputToToday(el){
-      // ISO yyyy-mm-dd in local time
-      const todayISO = new Date().toISOString().slice(0,10);
-      el.value = todayISO;
-    }
-
-    // --- App Logic ---
-    const startEl = document.getElementById("start");
-    const form = document.getElementById("calcForm");
-    const btnToday = document.getElementById("btnToday");
-
-    const resultBox = document.getElementById("result");
-    const resultLong = document.getElementById("resultLong");
-    const resultShort = document.getElementById("resultShort");
-    const copyBtn = document.getElementById("copyBtn");
-
-    // Initialize default to today
-    setDateInputToToday(startEl);
-
-    function calculateAndRender(){
-      if(!startEl.value) { resultBox.hidden = true; return; }
-      const startUTC = parseDateInput(startEl.value);
-      const plus60 = addDaysUTC(startUTC, 60);
-
-      resultLong.textContent = formatLong(plus60);
-      resultShort.textContent = `MM/DD/YYYY: ${formatMMDDYYYY(plus60)}`;
-      resultBox.hidden = false;
-    }
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      calculateAndRender();
-    });
-
-    // Auto-update when date changes
-    startEl.addEventListener("change", calculateAndRender);
-
-    // Today shortcut
-    btnToday.addEventListener("click", () => {
-      setDateInputToToday(startEl);
-      calculateAndRender();
-      startEl.focus();
-    });
-
-    // Copy to clipboard
-    copyBtn.addEventListener("click", async () => {
-      const text = `${resultLong.textContent} (${resultShort.textContent.replace("MM/DD/YYYY: ", "")})`;
-      try{
-        await navigator.clipboard.writeText(text);
-        copyBtn.textContent = "Copied!";
-        setTimeout(() => { copyBtn.textContent = "Copy"; }, 1200);
-      }catch{
-        // Fallback
-        const ta = document.createElement("textarea");
-        ta.value = text;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
-        copyBtn.textContent = "Copied!";
-        setTimeout(() => { copyBtn.textContent = "Copy"; }, 1200);
+      function todayString() {
+        const now = new Date();
+        return `${pad(now.getMonth() + 1)}/${pad(now.getDate())}/${now.getFullYear()}`;
       }
-    });
 
-    // Render initial result on load (today + 60)
-    calculateAndRender();
-  </script>
-</body>
+      // Auto-insert slashes as user types
+      dateInput.addEventListener("input", function (e) {
+        let raw = this.value.replace(/\D/g, ""); // digits only
+        let formatted = "";
+        if (raw.length > 0) formatted = raw.substring(0, 2);
+        if (raw.length > 2) formatted += "/" + raw.substring(2, 4);
+        if (raw.length > 4) formatted += "/" + raw.substring(4, 8);
+        this.value = formatted;
+        dateInput.classList.remove("invalid");
+        if (raw.length === 8) calculateAndRender(); // auto-calc when complete
+      });
+
+      function formatLong(d) {
+        const days = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        return `${days[d.getUTCDay()]}, ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`;
+      }
+      function formatMMDDYYYY(d) {
+        return `${pad(d.getUTCMonth() + 1)}/${pad(d.getUTCDate())}/${d.getUTCFullYear()}`;
+      }
+
+      function parseMMDDYYYY(str) {
+        const parts = str.split("/");
+        if (parts.length !== 3) return null;
+        const m = parseInt(parts[0], 10);
+        const d = parseInt(parts[1], 10);
+        const y = parseInt(parts[2], 10);
+        if (isNaN(m) || isNaN(d) || isNaN(y)) return null;
+        if (m < 1 || m > 12 || d < 1 || d > 31 || y < 1900 || y > 2999)
+          return null;
+        const date = new Date(Date.UTC(y, m - 1, d));
+        // Validate (e.g. Feb 31 would roll over)
+        if (date.getUTCMonth() !== m - 1 || date.getUTCDate() !== d)
+          return null;
+        return date;
+      }
+
+      function calculateAndRender() {
+        const start = parseMMDDYYYY(dateInput.value);
+        if (!start) {
+          if (dateInput.value.replace(/\D/g, "").length === 8) {
+            dateInput.classList.add("invalid");
+          }
+          resultBox.hidden = true;
+          return;
+        }
+        dateInput.classList.remove("invalid");
+        const plus60 = new Date(
+          Date.UTC(
+            start.getUTCFullYear(),
+            start.getUTCMonth(),
+            start.getUTCDate() + 60,
+          ),
+        );
+        resultLong.textContent = formatLong(plus60);
+        resultShort.textContent = formatMMDDYYYY(plus60);
+        resultBox.hidden = false;
+      }
+
+      document.getElementById("btnToday").addEventListener("click", () => {
+        dateInput.value = todayString();
+        dateInput.classList.remove("invalid");
+        calculateAndRender();
+      });
+
+      // Also calc on Enter
+      dateInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") calculateAndRender();
+      });
+
+      // Init to today
+      dateInput.value = todayString();
+      calculateAndRender();
+
+      // Copy to clipboard
+      copyBtn.addEventListener("click", async () => {
+        const text = `${resultShort.textContent}`;
+        //const text = `${resultLong.textContent} — ${resultShort.textContent}`;
+        try {
+          await navigator.clipboard.writeText(text);
+        } catch {
+          const ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          ta.remove();
+        }
+        copyBtn.textContent = "Copied!";
+        setTimeout(() => {
+          copyBtn.textContent = "Copy";
+        }, 1200);
+      });
+    </script>
+  </body>
 </html>
